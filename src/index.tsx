@@ -2,17 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import {idGeneratorService} from './application/idGeneratorService';
-import {PersistenceService} from './application/persistenceService';
+import {PersistenceServices} from './application/persistanceService';
 import reportWebVitals from './reportWebVitals';
 import idGeneratorAdapter from './services/idGeneratorAdapter';
-import {LocalStoragePersistenceAdapter} from './services/localStoragePersistenceAdapter';
+import LocalStoragePersistenceAdapter from './services/localStoragePersistenceAdapter';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
   <React.StrictMode>
     <App
-      persistence={new LocalStoragePersistenceAdapter() as PersistenceService}
+      persistence={new LocalStoragePersistenceAdapter() as PersistenceServices}
       idGen={idGeneratorAdapter as idGeneratorService}
     />
   </React.StrictMode>,

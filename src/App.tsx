@@ -1,18 +1,30 @@
-import React, {ChangeEventHandler, FormEventHandler, MouseEventHandler, useState} from 'react';
-import {idGeneratorService} from './application/idGeneratorService';
-import {PersistenceService} from './application/persistenceService';
-import {useTodoStorageService} from './services/todoStorageAdapter';
-import {useIntroductionService} from './services/useIntroductionService';
+import React, {
+  ChangeEventHandler,
+  FormEventHandler,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from 'react';
 
-function App(props: {persistence: PersistenceService; idGen: idGeneratorService}) {
-  const tss = useTodoStorageService(props.persistence, props.idGen);
-  useIntroductionService(props.persistence, tss);
+import { useTodoStorageService } from './services/useTodoStorage';
+import LocalStoragePersistenceAdapter from "./services/localStoragePersistenceAdapter";
+import { PersistenceServices } from './application/persistanceService';
+import idGeneratorAdapter from './services/idGeneratorAdapter';
+import { useIntroductionService } from './services/useIntroductionService';
+function App() {
+
   const [isAdding, setAdding] = useState(false);
-  const [newTodo, setNewTodo] = useState('');
+  const [newTodo, setNewTodo] = useState("");
+  const persistence = new LocalStoragePersistenceAdapter() as PersistenceServices;
+  const {todos, deleteTodo, addTodo} = useTodoStorageService(persistence, idGeneratorAdapter);
+  
+  useIntroductionService(persistence, useTodoStorageService(persistence, idGeneratorAdapter));
+
 
   const todoInputHandler: ChangeEventHandler<HTMLInputElement> = (e) => {
     setNewTodo(e.target.value);
   };
+
   const addClickHandler: MouseEventHandler = () => {
     if (isAdding) {
       setAdding(false);
@@ -21,11 +33,11 @@ function App(props: {persistence: PersistenceService; idGen: idGeneratorService}
       setAdding(true);
     }
   };
+
   const submitHandler: FormEventHandler = (e) => {
     e.preventDefault();
-    tss.addTodo({text: newTodo});
+    addTodo({text:newTodo});
     setAdding(false);
-    setNewTodo('');
   };
 
   return (
@@ -43,12 +55,16 @@ function App(props: {persistence: PersistenceService; idGen: idGeneratorService}
       )}
 
       <ol>
-        {tss.todos.map((t) => (
-          <li key={t.id}>
-            <button style={{WebkitMarginEnd: '8px'}} onClick={() => tss.deleteTodo(t.id)}>
-              X
+        {todos.map(todo => (
+          <li key={todo.id}>
+            <button
+              style={{WebkitMarginEnd: '8px'}}
+              id={todo.id}
+              onClick={() => deleteTodo(todo.id)}
+            >
+              delete 
             </button>
-            <span>{t.text}</span>
+            <span>{todo.text}</span>
           </li>
         ))}
       </ol>

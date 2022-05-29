@@ -11,14 +11,15 @@ import LocalStoragePersistenceAdapter from "./services/localStoragePersistenceAd
 import { PersistenceServices } from './application/persistanceService';
 import idGeneratorAdapter from './services/idGeneratorAdapter';
 import { useIntroductionService } from './services/useIntroductionService';
-function App() {
+import { idGeneratorService } from './application/idGeneratorService';
+function App({persistence, idGen}: {persistence: PersistenceServices, idGen: idGeneratorService}) {
 
   const [isAdding, setAdding] = useState(false);
   const [newTodo, setNewTodo] = useState("");
-  const persistence = new LocalStoragePersistenceAdapter() as PersistenceServices;
-  const {todos, deleteTodo, addTodo} = useTodoStorageService(persistence, idGeneratorAdapter);
+  //const persistence = new LocalStoragePersistenceAdapter() as PersistenceServices;
+  const {todos, deleteTodo, addTodo} = useTodoStorageService(persistence, idGen);
   
-  useIntroductionService(persistence, useTodoStorageService(persistence, idGeneratorAdapter));
+  useIntroductionService(persistence, useTodoStorageService(persistence, idGen));
 
 
   const todoInputHandler: ChangeEventHandler<HTMLInputElement> = (e) => {

@@ -31,18 +31,24 @@ describe("<App /> is functioning well", () => {
     expect(todoText).toBeInTheDocument();
   });
 
-  test('user can see todos after refresh',async () => {
+  test.only('user can see todos after refresh',async () => {
     const persistence = new LocalStoragePersistenceAdapter();
-    const {rerender} = render(<App persistence={persistence} idGen={idGeneratorAdapter} />);
-
+    render(<App persistence={persistence} idGen={idGeneratorAdapter} />);
+    await sleep(1000)
+    
     fireEvent.click(screen.getByText(/Add/i));
     const inputElement = screen.getByTestId("todo-input")
     userEvent.type(inputElement, "test todo");
     fireEvent.click(screen.getByTestId("todo-submit"));
 
-    rerender(<App persistence={persistence} idGen={idGeneratorAdapter} />);
+    cleanup();
+    render(<App persistence={persistence} idGen={idGeneratorAdapter} />);
+    await sleep(1000)
     expect(() => screen.getByText(/test todo/i)).not.toThrow();
   });
+
+  
+  const sleep = (ms: number ) => new Promise(resolve => setTimeout(resolve, ms));
   
   test('user can delete todo',async () => {
     const persistence = new LocalStoragePersistenceAdapter();

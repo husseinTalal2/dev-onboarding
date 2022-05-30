@@ -17,9 +17,8 @@ function App({persistence, idGen}: {persistence: PersistenceServices, idGen: idG
   const [isAdding, setAdding] = useState(false);
   const [newTodo, setNewTodo] = useState("");
   //const persistence = new LocalStoragePersistenceAdapter() as PersistenceServices;
-  const {todos, deleteTodo, addTodo} = useTodoStorageService(persistence, idGen);
-  
-  useIntroductionService(persistence, useTodoStorageService(persistence, idGen));
+  const todoStorage = useTodoStorageService(persistence, idGen);
+  useIntroductionService(persistence, todoStorage);
 
 
   const todoInputHandler: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -37,7 +36,7 @@ function App({persistence, idGen}: {persistence: PersistenceServices, idGen: idG
 
   const submitHandler: FormEventHandler = (e) => {
     e.preventDefault();
-    addTodo({text:newTodo});
+    todoStorage.addTodo({text:newTodo});
     setAdding(false);
   };
 
@@ -50,18 +49,19 @@ function App({persistence, idGen}: {persistence: PersistenceServices, idGen: idG
 
       {isAdding && (
         <form onSubmit={submitHandler} style={{margin: '12px'}}>
-          <input type="text" onChange={todoInputHandler} />
-          <input type="submit" />
+          <input type="text" data-testId="todo-input" onChange={todoInputHandler} />
+          <input type="submit" data-testId="todo-submit"/>
         </form>
       )}
 
       <ol>
-        {todos.map(todo => (
+        {todoStorage.todos.map(todo => (
           <li key={todo.id}>
             <button
+              data-testId="delete-todo"
               style={{WebkitMarginEnd: '8px'}}
               id={todo.id}
-              onClick={() => deleteTodo(todo.id)}
+              onClick={() => todoStorage.deleteTodo(todo.id)}
             >
               delete 
             </button>
